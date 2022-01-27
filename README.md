@@ -44,9 +44,16 @@ preferredContentSize.height = 512
 
 ### Interactive transition with UIScrollView
 
-To make the transition interactive with `UIScrollView` you need to override `modalView`:
+To make the transition interactive with `UIScrollView` you need to override `modalView` and set the bounces as `false`:
 
 ```swift
+lazy var scrollView: UIScrollView = {
+  let scrollView = UIScrollView()
+  scrollView.bounces = false
+
+  return scrollView
+}()
+
 override var modalView: UIView {
   return scrollView
 }
