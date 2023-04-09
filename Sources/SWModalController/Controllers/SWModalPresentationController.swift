@@ -13,7 +13,7 @@ class SWModalPresentationController: UIPresentationController {
   }
 
   lazy var dimmingView: UIView = {
-    let view = UIView(frame: UIScreen.main.bounds)
+    let view = UIView(frame: screenBounds)
     view.alpha = 0
     view.backgroundColor = .customDim
 
@@ -21,7 +21,7 @@ class SWModalPresentationController: UIPresentationController {
   }()
 
   lazy var dismissingView: UIView = {
-    let view = UIView(frame: UIScreen.main.bounds)
+    let view = UIView(frame: screenBounds)
     view.backgroundColor = .clear
     view.addGestureRecognizer(tapGestureRecognizer)
 
@@ -49,6 +49,8 @@ class SWModalPresentationController: UIPresentationController {
 
     return gestureRecognizer
   }
+
+  private let screenBounds = UIScreen.main.bounds
 
   private var initialFrame: CGRect = .zero
 
@@ -84,6 +86,7 @@ class SWModalPresentationController: UIPresentationController {
   override func presentationTransitionWillBegin() {
     super.presentationTransitionWillBegin()
 
+    guard let window = UIApplication.shared.keyWindow else { return }
     guard let presentedView = presentedView else { return }
 
     containerView?.insertSubview(dismissingView, aboveSubview: presentedView)
@@ -102,9 +105,9 @@ class SWModalPresentationController: UIPresentationController {
     presentedView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
 
     presentingViewController.transitionCoordinator?.animate(alongsideTransition: { [unowned self] _ in
-      let translationY: CGFloat = UIDevice.current.hasNotch ? cornerRadius : -4
+      let translationY = window.safeAreaInsets.top - (screenBounds.height * (1 - scaleFactor) / 2)
 
-      presentingView.frame = UIScreen.main.bounds
+      presentingView.frame = screenBounds
       presentingView.layer.cornerRadius = cornerRadius
       presentingView.transform = CGAffineTransform.identity
         .translatedBy(x: 0, y: translationY)
